@@ -33,19 +33,8 @@ export default defineNuxtConfig({
     "@nuxt/fonts",
     "@nuxt/icon",
     "@nuxt/image",
-    "@nuxt/test-utils",
     "@nuxtjs/seo",
     "motion-v/nuxt",
-    [
-      "@nuxtjs/google-fonts",
-      {
-        families: {
-          Domine: {
-            wght: "400..700",
-          },
-        },
-      },
-    ],
   ],
   nitro: { preset: "bun" },
   robots: {
