@@ -21,11 +21,11 @@ export default defineNuxtConfig({
         },
       ],
       link: [
-        { rel: "icon", type: "image/jpg", href: "/logo/apostrophe-logo.jpg" },
+        { rel: "icon", type: "image/webp", href: "/logo/apostrophe.webp" },
       ],
     },
   },
-  compatibilityDate: "2025-07-15",
+  compatibilityDate: "2025-11-26",
   css: ["./app/assets/css/tailwind.css"],
   devtools: { enabled: true },
   modules: [

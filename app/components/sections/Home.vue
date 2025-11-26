@@ -2,9 +2,9 @@
   <section
     id="home-section"
     :style="{
-      backgroundImage: `url(/images/gallery/dokumentasi-5.jpg)`,
+      backgroundImage: `url(/images/hero.webp)`,
     }"
-    class="w-full h-[768px] relative inset-0 z-10 bg-no-repeat bg-cover bg-center transition-all duration-250 ease-in-out aspect-square"
+    class="w-full h-[768px] relative inset-0 z-10 bg-no-repeat bg-cover bg-top transition-all duration-250 ease-in-out aspect-square"
   >
     <div
       class="absolute inset-0 z-5 bg-linear-to-t from-zinc-950 to-transparent"
@@ -21,7 +21,7 @@
           Apostrophe
         </h1>
         <a
-          class="border px-10 mt-2 py-4 flex items-center gap-3 text-lg hover:bg-zinc-100 hover:text-zinc-950 duration-250 transition-all cursor-pointer"
+          class="border px-10 mt-2 py-4 flex items-center gap-3 text-lg hover:bg-zinc-100 hover:text-zinc-950 duration-300 transition-all cursor-pointer"
           href="https://wa.me/6287802784601?text=Halo%20apostrophe%2C%20aku%20pengen%20tanya%20tanya%20nih"
           target="_blank"
           rel="external noreferrer"

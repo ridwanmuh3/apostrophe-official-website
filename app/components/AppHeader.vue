@@ -30,9 +30,9 @@ watch(showMenu, (v) => {
     >
       <img
         class="rounded-full w-12 h-fit"
-        src="/logo/apostrophe-logo.jpg"
+        src="/logo/apostrophe.webp"
         alt="Apostrophe Band Logo"
-      >
+      />
       <nav
         class="md:flex hidden relative gap-6 items-center font-bold text-zinc-50 text-md"
       >
@@ -73,7 +73,7 @@ watch(showMenu, (v) => {
       <a
         v-for="menu in navMenus"
         :key="menu.name"
-        :href="{ path: menu.path, hash: menu.path }"
+        href="menu.path"
         class="w-full px-16 py-6 hover:bg-zinc-600 transition-all duration-300 ease-in-out text-center"
         @click="closeMenu()"
       >
