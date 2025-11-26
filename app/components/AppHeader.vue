@@ -28,7 +28,7 @@ watch(showMenu, (v) => {
     <div
       class="max-w-[1366px] mx-auto px-6 md:px-8 py-6 flex gap-4 items-center justify-between"
     >
-      <NuxtImg
+      <img
         class="rounded-full w-12 h-fit"
         src="/logo/apostrophe-logo.jpg"
         alt="Apostrophe Band Logo"
