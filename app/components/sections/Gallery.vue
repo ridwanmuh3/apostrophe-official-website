@@ -1,3 +1,4 @@
+<!-- TODO: fix flickering height bug -->
 <script setup lang="ts">
 import imagesGallery from "~/assets/data/imagesGallery";
 

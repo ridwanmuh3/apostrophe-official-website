@@ -22,27 +22,26 @@ import { motion } from "motion-v";
     >
       <div class="flex gap-8 flex-col justify-center items-center">
         <h2
-          class="w-fit max-w-200 text-center text-[2.6rem] md:text-[3.2rem] md:leading-14 text-zinc-200"
+          class="w-fit max-w-200 text-center text-[2.6rem] md:text-[3.2rem] md:leading-[72px] text-zinc-200"
         >
           Hubungi Kami
         </h2>
         <p
-          class="max-w-160 w-full text-center leading-10 text-lg text-zinc-200"
+          class="max-w-160 w-full text-center leading-10 md:text-lg text-zinc-200"
         >
           Ingin mengetahui kami lebih jauh atau tertarik untuk mendatangkan kami
           di acara anda? hubungi kami sekarang!
         </p>
-        <div>
-          <NuxtLink
-            class="flex items-center gap-4 py-4 px-10 border text-lg hover:text-green-400 transition-all duration-300 cursor-pointer"
-            to="https://wa.me/6287802784601?text=Halo%20apostrophe%2C%20aku%20pengen%20tanya%20tanya%20nih"
-            target="_blank"
-            rel="external noreferrer"
-          >
-            <Icon class="text-3xl" name="ic:baseline-whatsapp" />
-            <span>Hubungi Melalui Whatsapp</span>
-          </NuxtLink>
-        </div>
+
+        <NuxtLink
+          class="flex items-center gap-4 py-4 px-10 border text-lg hover:text-green-400 transition-all duration-300 cursor-pointer"
+          to="https://wa.me/6287802784601?text=Halo%20apostrophe%2C%20aku%20pengen%20tanya%20tanya%20nih"
+          target="_blank"
+          rel="external noreferrer"
+        >
+          <Icon class="text-3xl" name="ic:baseline-whatsapp" />
+          <span>Hubungi Melalui Whatsapp</span>
+        </NuxtLink>
       </div>
     </motion.div>
   </section>

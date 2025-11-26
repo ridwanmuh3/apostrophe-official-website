@@ -2,12 +2,11 @@
 @import "tailwindcss";
 
 @theme {
-  /* --font-raleway: "Raleway", serif; */
-  --font-lekton: "Oxanium", monospace;
+  --font-oxanium: "Oxanium", monospace;
 }
 
 @layer base {
   html {
-    font-family: var(--font-lekton);
+    font-family: var(--font-oxanium);
   }
 }
