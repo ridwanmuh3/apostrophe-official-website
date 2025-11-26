@@ -33,15 +33,15 @@ import { motion } from "motion-v";
           di acara anda? hubungi kami sekarang!
         </p>
         <div>
-          <a
-            class="flex items-center gap-4 py-4 px-10 border text-lg hover:text-green-400 transition-all duration-250"
-            href="https://wa.me/6287802784601?text=Halo%20apostrophe%2C%20aku%20pengen%20tanya%20tanya%20nih"
+          <NuxtLink
+            class="flex items-center gap-4 py-4 px-10 border text-lg hover:text-green-400 transition-all duration-300 cursor-pointer"
+            to="https://wa.me/6287802784601?text=Halo%20apostrophe%2C%20aku%20pengen%20tanya%20tanya%20nih"
             target="_blank"
             rel="external noreferrer"
           >
             <Icon class="text-3xl" name="ic:baseline-whatsapp" />
             <span>Hubungi Melalui Whatsapp</span>
-          </a>
+          </NuxtLink>
         </div>
       </div>
     </motion.div>

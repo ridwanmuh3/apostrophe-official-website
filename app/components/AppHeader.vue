@@ -36,9 +36,9 @@ watch(showMenu, (v) => {
       <nav
         class="md:flex hidden relative gap-6 items-center font-bold text-zinc-50 text-md"
       >
-        <a v-for="menu in navMenus" :key="menu.name" :to="menu.path">
+        <NuxtLink v-for="menu in navMenus" :key="menu.name" :to="menu.path">
           {{ menu.name }}
-        </a>
+        </NuxtLink>
       </nav>
       <button
         class="relative flex md:hidden items-center justify-center cursor-pointer hover:bg-zinc-800/50 p-2 rounded-full transition-all duration-300 ease-in-out"
@@ -70,15 +70,15 @@ watch(showMenu, (v) => {
     <nav
       class="w-full flex flex-col items-center font-bold text-zinc-50 text-3xl"
     >
-      <a
+      <NuxtLink
         v-for="menu in navMenus"
         :key="menu.name"
-        :href="menu.path"
+        :to="menu.path"
         class="w-full px-16 py-6 hover:bg-zinc-600 transition-all duration-300 ease-in-out text-center"
         @click="closeMenu()"
       >
         {{ menu.name }}
-      </a>
+      </NuxtLink>
     </nav>
   </motion.div>
 </template>

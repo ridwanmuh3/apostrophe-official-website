@@ -56,7 +56,7 @@ const carouselDotIndicatorHandler = (index: number) => {
         <button
           key="previousGallery"
           :class="
-            'py-3 px-3  border border-zinc-300 transition-all duration-250 ease-in-out flex items-center justify-center ' +
+            'py-3 px-3  border border-zinc-300 transition-all duration-300 ease-in-out flex items-center justify-center ' +
             (currentGalleryIndex === 0
               ? 'border-zinc-500 text-zinc-500'
               : 'bg-none cursor-pointer')
@@ -73,7 +73,7 @@ const carouselDotIndicatorHandler = (index: number) => {
         <button
           key="nextGallery"
           :class="
-            'py-3 px-3  border border-zinc-300 transition-all duration-250 ease-in-out flex items-center justify-center ' +
+            'py-3 px-3  border border-zinc-300 transition-all duration-300 ease-in-out flex items-center justify-center ' +
             (currentGalleryIndex === totalGalleryIndex - 1
               ? 'border-zinc-500 text-zinc-500'
               : 'bg-none cursor-pointer')
