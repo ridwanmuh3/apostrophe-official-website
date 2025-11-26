@@ -47,10 +47,9 @@ const uniqueKey = computed(() => {
         :key="`${image}-${idx}`"
         class="grid gap-8"
       >
-        <NuxtImg
+        <img
           :src="image"
           :loading="idx < 4 ? 'eager' : 'lazy'"
-          :preload="idx < 4"
           class="h-full max-w-full w-full object-cover object-center aspect-square"
         />
       </div>
