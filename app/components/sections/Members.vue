@@ -38,10 +38,9 @@ import { motion } from "motion-v";
           :in-view-options="{ amount: 0.2, once: true }"
           class="w-full flex gap-8 md:gap-12 items-center flex-wrap flex-col md:flex-row md:even:flex-row-reverse md:justify-start justify-center text-center md:text-start"
         >
-          <NuxtImg
+          <img
             class="grayscale w-132 h-132 object-cover object-center"
             :loading="'eager'"
-            :preload="true"
             :src="member.image"
           />
           <div class="space-y-2 md:space-y-4">
