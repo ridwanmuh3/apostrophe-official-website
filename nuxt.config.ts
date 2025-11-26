@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   app: {
     head: {
-      title: "We are Apostrophe | Offical Website",
+      title: "We are Apostrophe | Apostrophe Official Website",
       htmlAttrs: {
         lang: "id",
       },
@@ -57,6 +57,9 @@ export default defineNuxtConfig({
     },
   },
   ssr: false,
+  ogImage: {
+    enabled: false,
+  },
   vite: {
     plugins: [tailwindcss()],
   },

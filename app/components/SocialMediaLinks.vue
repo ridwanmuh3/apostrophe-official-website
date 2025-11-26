@@ -4,13 +4,13 @@ import socialMediaLinks from "~/assets/data/socialMediaLinks";
 
 <template>
   <div class="flex gap-4 justify-center items-center">
-    <NuxtLink
+    <a
       v-for="{ name, icon, link } in socialMediaLinks"
       :key="name"
-      :to="link"
+      :href="link"
       target="_blank"
     >
       <Icon class="text-3xl" :name="icon" />
-    </NuxtLink>
+    </a>
   </div>
 </template>

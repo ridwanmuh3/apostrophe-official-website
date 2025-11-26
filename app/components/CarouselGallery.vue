@@ -10,7 +10,7 @@ const props = defineProps<PropsType>();
 const direction = useState<number>("direction", () => 1);
 const prevIndex = useState<number>(
   "prevIndex",
-  () => props.currentGalleryIndex || 0
+  () => props.currentGalleryIndex || 0,
 );
 
 watch(
@@ -20,7 +20,7 @@ watch(
       direction.value = newIndex > oldIndex ? 1 : -1;
       prevIndex.value = oldIndex;
     }
-  }
+  },
 );
 
 const uniqueKey = computed(() => {
@@ -51,7 +51,7 @@ const uniqueKey = computed(() => {
           :src="image"
           :loading="idx < 4 ? 'eager' : 'lazy'"
           class="h-full max-w-full w-full object-cover object-center aspect-square"
-        />
+        >
       </div>
     </motion.div>
   </div>

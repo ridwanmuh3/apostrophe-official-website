@@ -42,7 +42,7 @@ import { motion } from "motion-v";
             class="grayscale w-132 h-132 object-cover object-center"
             :loading="'eager'"
             :src="member.image"
-          />
+          >
           <div class="space-y-2 md:space-y-4">
             <h2
               class="text-3xl md:text-4xl leading-12 md:leading-14 text-zinc-200"
