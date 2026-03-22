@@ -34,7 +34,6 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@nuxt/image",
     "@nuxtjs/seo",
-    "motion-v/nuxt",
   ],
   nitro: { preset: "bun" },
   robots: {
@@ -45,7 +44,7 @@ export default defineNuxtConfig({
       scrollBehaviorType: "smooth",
     },
   },
-  ssr: false,
+  ssr: true,
   ogImage: {
     enabled: false,
   },

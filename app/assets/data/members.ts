@@ -24,14 +24,6 @@ export default [
     image: "/images/members/bassist.webp",
   },
   {
-    fullname: "Candra Nugraha",
-    nickname: "Can",
-    role: "Pianist",
-    description:
-      "Candra merupakan seorang pianist yang berasal dari Ciamis, Jawa Barat. Dia sangat mahir dan andal dalam memainkan piano dan merupakan seorang Wibu.",
-    image: "/images/members/pianist.webp",
-  },
-  {
     fullname: "Rizky Mochamad Gani",
     nickname: "Gan",
     role: "Drummer",

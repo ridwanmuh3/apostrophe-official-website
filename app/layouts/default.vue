@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full mx-auto bg-zinc-950 h-full tracking-wide text-zinc-100">
+  <div class="w-full min-h-screen bg-zinc-950 text-zinc-100 tracking-wide antialiased overflow-x-hidden">
     <AppHeader />
-    <main class="mx-auto">
+    <main>
       <slot />
     </main>
     <AppFooter />
