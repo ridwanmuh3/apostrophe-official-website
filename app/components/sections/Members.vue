@@ -79,7 +79,7 @@ onMounted(() => {
       <div class="flex flex-col gap-24 md:gap-36">
         <div
           v-for="(member, idx) in members"
-          :key="member.nickname"
+          :key="member.fullname"
           class="member-block grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center"
         >
           <div
