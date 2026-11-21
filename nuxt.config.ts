@@ -5,14 +5,11 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: "We are Apostrophe | Apostrophe Official Website",
+      titleTemplate: "%s",
       htmlAttrs: {
         lang: "id",
       },
       meta: [
-        {
-          name: "viewport",
-          content: "width=device-width, initial-scale=1",
-        },
         {
           id: "description",
           name: "description",
@@ -26,8 +23,12 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: "2025-11-26",
-  css: ["./app/assets/css/tailwind.css"],
+  css: ["~/assets/css/tailwind.css"],
   devtools: { enabled: true },
+  site: {
+    name: "Apostrophe",
+    defaultLocale: "id",
+  },
   modules: [
     "@nuxt/eslint",
     "@nuxt/fonts",
@@ -35,7 +36,11 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@nuxtjs/seo",
   ],
-  nitro: { preset: "bun" },
+  aiReady: false,
+  skewProtection: false,
+  fonts: {
+    throwOnError: false,
+  },
   robots: {
     blockNonSeoBots: true,
   },
