@@ -108,9 +108,6 @@ onMounted(() => {
             >
               {{ member.fullname }}
             </h3>
-            <span class="text-base font-medium text-zinc-300">
-              "{{ member.nickname }}"
-            </span>
             <p
               class="text-base md:text-lg leading-relaxed text-zinc-400 max-w-lg mt-1"
             >

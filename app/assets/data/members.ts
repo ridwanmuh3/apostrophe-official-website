@@ -1,7 +1,6 @@
 export default [
   {
     fullname: "Fauzan Alvin Mubarok",
-    nickname: "Zan",
     role: "Vocal and Rhythm Guitarist",
     description:
       "Fauzan merupakan penyanyi dan ritem yang berasal dari Banjarsari, Jawa Barat. ",
@@ -23,7 +22,6 @@ export default [
   },
   {
     fullname: "Candra Nugraha",
-    nickname: "Can",
     role: "Pianist",
     description:
       "Candra merupakan seorang pianist yang berasal dari Ciamis, Jawa Barat.",
@@ -31,7 +29,6 @@ export default [
   },
   {
     fullname: "Rizky Mochamad Gani",
-    nickname: "Gan",
     role: "Drummer",
     description:
       "Rizky adalah seorang drummer yang berasal dari Tasikmalaya, Jawa Barat. Selain memainkan alat musik drum, dia juga terampil memainkan alat musik piano.",

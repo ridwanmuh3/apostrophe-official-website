@@ -27,6 +27,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   site: {
     name: "Apostrophe",
+    url: "https://weareapostrophe.netlify.app",
     defaultLocale: "id",
   },
   modules: [
