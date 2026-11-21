@@ -4,6 +4,10 @@ export default [
     path: "#home-section",
   },
   {
+    name: "Musik",
+    path: "#release-section",
+  },
+  {
     name: "Tentang Kami",
     path: "#about-section",
   },

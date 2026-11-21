@@ -4,11 +4,13 @@
   import Gallery from "~/components/sections/Gallery.vue";
   import Home from "~/components/sections/Home.vue";
   import Members from "~/components/sections/Members.vue";
+  import Release from "~/components/sections/Release.vue";
 </script>
 
 <template>
   <div>
     <Home />
+    <Release />
     <About />
     <Members />
     <Gallery />
