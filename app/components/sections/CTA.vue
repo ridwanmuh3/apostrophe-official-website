@@ -1,72 +1,81 @@
 <script setup lang="ts">
-const { gsap, ScrollTrigger } = useGsap();
-const sectionRef = ref<HTMLElement | null>(null);
-const contentRef = ref<HTMLElement | null>(null);
+const { gsap } = useGsap();
+
+const root = ref<HTMLElement | null>(null);
+
+const whatsapp =
+  "https://wa.me/6287802784601?text=Halo%20apostrophe%2C%20aku%20pengen%20tanya%20tanya%20nih";
+let mm: ReturnType<typeof gsap.matchMedia> | null = null;
 
 onMounted(() => {
-  if (!contentRef.value) return;
+  mm = gsap.matchMedia();
 
-  const children = Array.from(contentRef.value.children);
+  mm.add("(prefers-reduced-motion: no-preference)", () => {
+    if (!root.value) return;
 
-  gsap.set(children, { y: 25, opacity: 0 });
-
-  ScrollTrigger.create({
-    trigger: sectionRef.value,
-    start: "top 85%",
-    once: true,
-    onEnter: () => {
-      gsap.to(children, {
-        y: 0,
-        opacity: 1,
-        duration: 0.6,
-        stagger: 0.08,
-        ease: "power2.out",
-      });
-    },
+    gsap.from(root.value.querySelectorAll(".cta-reveal"), {
+      y: 28,
+      opacity: 0,
+      duration: 0.9,
+      stagger: 0.1,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: root.value,
+        start: "top 78%",
+        once: true,
+      },
+    });
   });
 });
+
+onBeforeUnmount(() => mm?.revert());
 </script>
 
 <template>
   <section
     id="cta-section"
-    ref="sectionRef"
-    class="relative w-full bg-zinc-900/30 overflow-hidden"
+    ref="root"
+    class="relative w-full overflow-hidden border-t border-bone/10 py-32 md:py-44"
   >
-    <!-- Mesh gradient accents -->
-    <div
-      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[350px] bg-purple-600/8 rounded-full blur-[160px] pointer-events-none"
-    />
-    <div
-      class="absolute bottom-10 left-10 w-[250px] h-[250px] bg-pink-500/6 rounded-full blur-[120px] pointer-events-none"
-    />
+    <div class="mx-auto max-w-7xl px-6 md:px-10">
+      <div class="cta-reveal">
+        <UiSectionLabel index="06" label="Kontak" />
+      </div>
 
-    <div
-      ref="contentRef"
-      class="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-32 md:py-44 flex flex-col items-center text-center"
-    >
-      <h2
-        class="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold leading-tight tracking-tight text-white max-w-3xl"
-      >
-        Hubungi Kami
-      </h2>
+      <div class="mt-12 grid grid-cols-12 items-end gap-y-12 md:mt-16 md:gap-x-10">
+        <h2
+          class="cta-reveal col-span-12 font-display text-[clamp(3.4rem,9.5vw,8.5rem)] leading-[0.84] tracking-[-0.03em] md:col-span-8"
+        >
+          Hubungi <em class="italic">Kami</em>
+        </h2>
 
-      <p
-        class="mt-6 text-base md:text-lg text-zinc-400 max-w-xl leading-relaxed"
-      >
-        Ingin mengetahui kami lebih jauh atau tertarik untuk mendatangkan kami di
-        acara anda? Hubungi kami sekarang!
-      </p>
+        <div class="cta-reveal col-span-12 md:col-span-4">
+          <p class="max-w-sm text-[15px] leading-[1.8] text-ash">
+            Ingin mengetahui kami lebih jauh atau tertarik untuk mendatangkan
+            kami di acara anda? Hubungi kami sekarang!
+          </p>
 
-      <NuxtLink
-        class="mt-10 inline-flex items-center gap-3 bg-white text-zinc-950 px-8 py-3.5 text-sm font-medium tracking-wide hover:bg-zinc-200 active:scale-[0.98] transition-colors duration-300 cursor-pointer rounded-md"
-        to="https://wa.me/6287802784601?text=Halo%20apostrophe%2C%20aku%20pengen%20tanya%20tanya%20nih"
-        target="_blank"
-        rel="external noreferrer"
-      >
-        <Icon class="text-lg" name="ic:baseline-whatsapp" />
-        <span>Hubungi Kami</span>
-      </NuxtLink>
+          <div class="mt-8">
+            <UiAppButton
+              :href="whatsapp"
+              target="_blank"
+              rel="external noreferrer"
+              cursor="Chat"
+            >
+              <Icon name="ic:baseline-whatsapp" class="text-base" />
+              Hubungi Kami
+            </UiAppButton>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-24 border-y border-bone/10 py-5 md:mt-32">
+      <UiMarquee
+        :items="['APOSTROPHE', 'POP', 'ROCK', 'ALTERNATIVE']"
+        :speed="52"
+        separator="·"
+      />
     </div>
   </section>
 </template>

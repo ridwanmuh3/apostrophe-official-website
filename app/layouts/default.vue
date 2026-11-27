@@ -1,5 +1,12 @@
+<script setup lang="ts">
+useSmoothScroll();
+</script>
+
 <template>
-  <div class="w-full min-h-screen bg-zinc-950 text-zinc-100 tracking-wide antialiased overflow-x-hidden">
+  <div class="relative min-h-screen w-full overflow-x-clip bg-ink text-bone">
+    <UiGrainOverlay />
+    <UiCustomCursor />
+    <UiScrollProgress />
     <AppHeader />
     <main>
       <slot />

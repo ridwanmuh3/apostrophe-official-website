@@ -1,146 +1,278 @@
 <script setup lang="ts">
 import navMenus from "~/assets/data/navMenus";
+import { lockScroll, scrollToSection, unlockScroll } from "~/composables/useSmoothScroll";
 
-const { gsap } = useGsap();
+const { gsap, ScrollTrigger } = useGsap();
 
-const headerRef = ref<HTMLElement | null>(null);
-const menuOverlayRef = ref<HTMLElement | null>(null);
+const root = ref<HTMLElement | null>(null);
+const overlay = ref<HTMLElement | null>(null);
+const closeButton = ref<HTMLElement | null>(null);
+const menuTrigger = ref<HTMLElement | null>(null);
+
 const scrolled = ref(false);
+const inverted = ref(false);
 const menuOpen = ref(false);
 
-onMounted(() => {
-  gsap.fromTo(
-    headerRef.value,
-    { y: -80, opacity: 0 },
-    {
-      y: 0,
-      opacity: 1,
-      duration: 1,
-      delay: 1.8,
-      ease: "power3.out",
-    },
-  );
+let scrollHandler: (() => void) | null = null;
+let invertTrigger: ScrollTrigger | null = null;
+let mm: ReturnType<typeof gsap.matchMedia> | null = null;
 
-  window.addEventListener(
-    "scroll",
-    () => {
-      scrolled.value = window.scrollY > 60;
-    },
-    { passive: true },
-  );
+const prefersReduced = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+onMounted(() => {
+  scrollHandler = () => {
+    scrolled.value = window.scrollY > 24;
+  };
+  scrollHandler();
+  window.addEventListener("scroll", scrollHandler, { passive: true });
+
+  // Header inversion over the bone About interlude.
+  nextTick(() => {
+    const about = document.querySelector("#about-section");
+    if (!about) return;
+    invertTrigger = ScrollTrigger.create({
+      trigger: about,
+      start: "top 76px",
+      end: "bottom 76px",
+      onToggle: (self) => {
+        inverted.value = self.isActive;
+      },
+    });
+  });
+
+  mm = gsap.matchMedia();
+  mm.add("(prefers-reduced-motion: no-preference)", () => {
+    if (!root.value) return;
+    gsap.from(root.value, {
+      yPercent: -110,
+      duration: 1,
+      delay: 0.25,
+      ease: "expo.out",
+    });
+  });
+
+  document.addEventListener("keydown", onGlobalKeydown);
 });
 
-const openMenu = () => {
-  menuOpen.value = true;
-  document.body.classList.add("overflow-hidden");
-  nextTick(() => {
-    gsap.fromTo(
-      menuOverlayRef.value,
-      { clipPath: "circle(0% at calc(100% - 2rem) 2rem)" },
-      {
-        clipPath: "circle(150% at calc(100% - 2rem) 2rem)",
-        duration: 0.6,
-        ease: "power3.out",
-      },
-    );
-    gsap.fromTo(
-      ".mobile-nav-link",
-      { y: 40, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.5,
-        stagger: 0.08,
-        delay: 0.25,
-        ease: "power2.out",
-      },
-    );
-  });
-};
+onBeforeUnmount(() => {
+  if (scrollHandler) window.removeEventListener("scroll", scrollHandler);
+  document.removeEventListener("keydown", onGlobalKeydown);
+  invertTrigger?.kill();
+  mm?.revert();
+  unlockScroll();
+});
 
-const closeMenu = () => {
-  gsap.to(menuOverlayRef.value, {
-    clipPath: "circle(0% at calc(100% - 2rem) 2rem)",
-    duration: 0.45,
-    ease: "power3.in",
-    onComplete: () => {
-      menuOpen.value = false;
-      document.body.classList.remove("overflow-hidden");
+function onGlobalKeydown(event: KeyboardEvent) {
+  if (event.key === "Escape" && menuOpen.value) closeMenu();
+}
+
+async function openMenu() {
+  menuOpen.value = true;
+  lockScroll();
+  await nextTick();
+  closeButton.value?.focus();
+
+  if (!overlay.value || prefersReduced()) return;
+
+  gsap.fromTo(
+    overlay.value,
+    { opacity: 0 },
+    { opacity: 1, duration: 0.35, ease: "power2.out" },
+  );
+  gsap.fromTo(
+    overlay.value.querySelectorAll(".mobile-nav-inner"),
+    { yPercent: 110 },
+    {
+      yPercent: 0,
+      duration: 0.85,
+      stagger: 0.07,
+      delay: 0.08,
+      ease: "expo.out",
     },
+  );
+}
+
+function closeMenu(scrollTarget?: string) {
+  if (!menuOpen.value) return;
+
+  const finish = () => {
+    menuOpen.value = false;
+    unlockScroll();
+    if (scrollTarget) {
+      scrollToSection(scrollTarget);
+      if (window.location.hash !== scrollTarget) {
+        history.pushState(null, "", scrollTarget);
+      }
+    } else {
+      menuTrigger.value?.focus();
+    }
+  };
+
+  if (!overlay.value || prefersReduced()) {
+    finish();
+    return;
+  }
+
+  gsap.to(overlay.value, {
+    opacity: 0,
+    duration: 0.3,
+    ease: "power2.in",
+    onComplete: finish,
   });
-};
+}
+
+function trapMenu(event: KeyboardEvent) {
+  if (event.key !== "Tab" || !overlay.value) return;
+
+  const focusables = Array.from(
+    overlay.value.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  );
+  if (!focusables.length) return;
+
+  const first = focusables[0]!;
+  const last = focusables[focusables.length - 1]!;
+
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
 </script>
 
 <template>
   <header
-    ref="headerRef"
-    class="fixed top-0 inset-x-0 z-50 opacity-0 border-b transition-[background-color,border-color,backdrop-filter] duration-500"
-    :class="
-      scrolled
-        ? 'bg-zinc-950/80 backdrop-blur-xl border-zinc-800/50'
-        : 'bg-transparent border-transparent'
-    "
+    ref="root"
+    class="fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,color] duration-500"
+    :class="[
+      inverted ? 'text-ink' : 'text-bone',
+      inverted ? 'border-ink/10' : 'border-bone/10',
+      scrolled ? (inverted ? 'bg-bone/85' : 'bg-ink/85') : 'bg-transparent',
+    ]"
   >
     <div
-      class="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between"
+      class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10"
     >
-      <NuxtLink to="#home-section" class="flex items-center gap-3">
+      <NuxtLink
+        to="#home-section"
+        class="group flex items-center gap-3"
+        aria-label="Apostrophe — kembali ke atas"
+      >
         <img
-          class="rounded-full w-10 h-10"
           src="/logo/apostrophe.webp"
-          alt="Apostrophe Band Logo"
-        />
-        <span class="font-semibold text-lg tracking-tight hidden sm:inline"
-          >Apostrophe</span
+          alt=""
+          width="32"
+          height="32"
+          class="h-8 w-8 rounded-full"
         >
+        <span class="font-display text-xl leading-none tracking-tight">
+          Apostrophe
+        </span>
       </NuxtLink>
 
-      <nav class="md:flex hidden gap-8 items-center">
+      <nav class="hidden items-center gap-9 lg:flex" aria-label="Navigasi utama">
         <NuxtLink
-          v-for="menu in navMenus"
+          v-for="(menu, idx) in navMenus"
           :key="menu.name"
           :to="menu.path"
-          class="text-sm font-medium tracking-wide text-zinc-400 hover:text-white transition-colors duration-300"
+          class="group relative flex items-baseline gap-2 text-[13px] font-light tracking-[0.01em] opacity-70 transition-opacity duration-300 hover:opacity-100"
         >
-          {{ menu.name }}
+          <span
+            class="font-oxanium text-[9px] tracking-[0.2em]"
+            :class="inverted ? 'text-ink/45' : 'text-champagne/75'"
+          >
+            0{{ idx + 1 }}
+          </span>
+          <span>{{ menu.name }}</span>
+          <span
+            aria-hidden="true"
+            class="absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-500 ease-editorial group-hover:scale-x-100"
+          />
         </NuxtLink>
       </nav>
 
       <button
-        class="relative flex md:hidden items-center justify-center cursor-pointer p-2 rounded-lg hover:bg-zinc-800/60 transition-colors duration-300 active:scale-95"
-        aria-label="Toggle navigation menu"
+        ref="menuTrigger"
+        type="button"
+        class="flex items-center gap-3 py-1 lg:hidden"
+        aria-label="Buka menu navigasi"
+        aria-controls="mobile-menu"
+        :aria-expanded="menuOpen"
         @click="openMenu"
       >
-        <Icon class="text-2xl" name="mdi:menu" />
+        <span class="font-oxanium text-[9px] uppercase tracking-[0.3em] opacity-60">
+          Menu
+        </span>
+        <span aria-hidden="true" class="flex w-6 flex-col gap-1.5">
+          <span class="h-px w-full bg-current" />
+          <span class="h-px w-full bg-current" />
+        </span>
       </button>
     </div>
   </header>
 
-  <!-- Mobile menu overlay -->
-  <div
-    v-if="menuOpen"
-    ref="menuOverlayRef"
-    class="fixed inset-0 z-[60] bg-zinc-950 flex flex-col items-center justify-center"
-    style="clip-path: circle(0% at calc(100% - 2rem) 2rem)"
-  >
-    <button
-      class="absolute top-6 right-6 p-2 rounded-lg hover:bg-zinc-800/60 transition-colors duration-300 cursor-pointer active:scale-95"
-      aria-label="Close navigation menu"
-      @click="closeMenu"
+  <Teleport to="body">
+    <div
+      v-if="menuOpen"
+      id="mobile-menu"
+      ref="overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu navigasi"
+      class="fixed inset-0 z-[85] flex flex-col bg-ink px-6 py-6 text-bone md:px-10"
+      @keydown.esc="closeMenu()"
+      @keydown.tab="trapMenu"
     >
-      <Icon class="text-2xl" name="mdi:close" />
-    </button>
+      <div class="flex items-center justify-between">
+        <span class="font-oxanium text-[10px] uppercase tracking-[0.3em] text-ash">
+          Menu
+        </span>
+        <button
+          ref="closeButton"
+          type="button"
+          class="flex items-center gap-3 py-2 font-oxanium text-[10px] uppercase tracking-[0.3em] text-bone/80 transition-colors hover:text-bone"
+          aria-label="Tutup menu navigasi"
+          @click="closeMenu()"
+        >
+          Tutup
+          <span aria-hidden="true" class="relative block h-4 w-4">
+            <span class="absolute left-0 top-1/2 h-px w-full rotate-45 bg-current" />
+            <span class="absolute left-0 top-1/2 h-px w-full -rotate-45 bg-current" />
+          </span>
+        </button>
+      </div>
 
-    <nav class="flex flex-col items-center gap-2">
-      <NuxtLink
-        v-for="menu in navMenus"
-        :key="menu.name"
-        :to="menu.path"
-        class="mobile-nav-link text-3xl font-semibold tracking-tight text-zinc-300 hover:text-white px-8 py-4 transition-colors duration-300"
-        @click="closeMenu"
-      >
-        {{ menu.name }}
-      </NuxtLink>
-    </nav>
-  </div>
+      <nav class="flex flex-1 flex-col justify-center" aria-label="Navigasi seluler">
+        <div
+          v-for="(menu, idx) in navMenus"
+          :key="menu.name"
+          class="overflow-hidden"
+        >
+          <a
+            :href="menu.path"
+            data-no-autoscroll
+            class="mobile-nav-inner flex items-baseline gap-5 py-1 font-display text-[clamp(2.5rem,10vw,5rem)] leading-[1.08] tracking-[-0.02em]"
+            @click.prevent="closeMenu(menu.path)"
+          >
+            <span class="font-oxanium text-[10px] tracking-[0.3em] text-champagne">
+              0{{ idx + 1 }}
+            </span>
+            <span>{{ menu.name }}</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="flex items-center justify-between border-t border-bone/10 pt-5">
+        <p class="font-oxanium text-[9px] uppercase tracking-[0.28em] text-ash">
+          Tasikmalaya · Indonesia
+        </p>
+        <SocialMediaLinks />
+      </div>
+    </div>
+  </Teleport>
 </template>

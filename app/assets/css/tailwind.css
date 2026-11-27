@@ -24,32 +24,163 @@
 }
 
 @theme {
-  --font-oxanium: "Oxanium", monospace;
+  --color-ink: #0a0a0b;
+  --color-ink-soft: #101012;
+  --color-bone: #f3eee5;
+  --color-champagne: #c6b08c;
+  --color-ash: #8c877e;
+  --color-violet: #8b5cf6;
+
+  --font-display: "Instrument Serif", "Times New Roman", serif;
+  --font-sans: "Inter Tight", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-oxanium: "Oxanium", ui-monospace, monospace;
+
+  --radius-editorial: 2px;
+
+  --ease-editorial: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
-  html,
+  html {
+    background-color: var(--color-ink);
+    color-scheme: dark;
+    scrollbar-color: #3a3732 var(--color-ink);
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
-    font-family: var(--font-oxanium);
-    background-color: #09090b;
-    color: #f4f4f5;
+    background-color: var(--color-ink);
+    color: var(--color-bone);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 400;
   }
 
   ::selection {
-    background-color: rgba(255, 255, 255, 0.15);
-    color: white;
+    background-color: var(--color-champagne);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-champagne);
+    outline-offset: 3px;
+  }
+
+  img {
+    max-width: 100%;
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #09090b;
+    background: var(--color-ink);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #3f3f46;
-    border-radius: 3px;
+    background: #35322d;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ash);
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* Materials                                                         */
+/* ---------------------------------------------------------------- */
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: soft-light;
+}
+
+@media (max-width: 1023px) {
+  .grain-overlay {
+    opacity: 0.02;
+  }
+}
+
+.grade-warm {
+  filter: grayscale(1) sepia(0.18) saturate(0.9) contrast(1.03) brightness(0.9);
+}
+
+.writing-vertical {
+  writing-mode: vertical-rl;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- */
+/* Lenis                                                             */
+/* ---------------------------------------------------------------- */
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body.is-locked {
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------- */
+/* Custom cursor                                                     */
+/* ---------------------------------------------------------------- */
+
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+
+/* ---------------------------------------------------------------- */
+/* Reduced motion                                                    */
+/* ---------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
