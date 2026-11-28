@@ -225,7 +225,7 @@ onBeforeUnmount(() => {
       role="dialog"
       aria-modal="true"
       aria-label="Galeri Apostrophe"
-      class="fixed inset-0 z-[90] flex flex-col bg-ink/95"
+      class="fixed inset-0 z-[90] flex flex-col bg-ink"
     >
       <div
         class="flex items-center justify-between border-b border-bone/10 px-5 py-4 md:px-8"
@@ -271,8 +271,9 @@ onBeforeUnmount(() => {
           ref="image"
           :src="currentImage"
           :alt="`Dokumentasi penampilan Apostrophe ${currentIndex + 1}`"
-          class="max-h-[78svh] max-w-full select-none object-contain ring-1 ring-bone/10"
+          class="grade-warm max-h-[78svh] max-w-full select-none object-contain ring-1 ring-bone/10"
           draggable="false"
+          decoding="async"
         >
 
         <button

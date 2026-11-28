@@ -22,23 +22,11 @@ onMounted(() => {
 
     const intro = gsap.timeline({ defaults: { ease: eases.expo } });
 
-    intro
-      .fromTo(
-        imageRef.value,
-        { scale: 1.06 },
-        { scale: 1, duration: 1.6, ease: "power2.out" },
-        0,
-      )
-      .from(
-        ".hero-line-inner",
-        { yPercent: 112, duration: 1.15, stagger: 0.12 },
-        0.15,
-      )
-      .from(
-        ".hero-reveal",
-        { y: 22, opacity: 0, duration: 0.8, stagger: 0.08 },
-        0.55,
-      );
+    intro.from(
+      ".hero-reveal",
+      { y: 22, opacity: 0, duration: 0.8, stagger: 0.08 },
+      0.15,
+    );
 
     gsap.to(imageRef.value, {
       yPercent: 7,
@@ -119,7 +107,7 @@ onBeforeUnmount(() => mm?.revert());
       aria-hidden="true"
     >
       <span class="h-16 w-px bg-bone/20" />
-      <div class="writing-vertical flex items-center gap-6 font-oxanium text-[9px] uppercase tracking-[0.32em] text-bone/55">
+      <div class="writing-vertical flex items-center gap-6 font-oxanium text-[9px] uppercase tracking-[0.32em] text-bone/70">
         <span v-for="item in meta" :key="item">{{ item }}</span>
       </div>
       <span class="h-16 w-px bg-bone/20" />
@@ -166,7 +154,7 @@ onBeforeUnmount(() => mm?.revert());
         </div>
 
         <div ref="scrollCueRef" class="hero-reveal hidden items-center gap-4 sm:flex">
-          <span class="font-oxanium text-[9px] uppercase tracking-[0.3em] text-bone/45">
+          <span class="font-oxanium text-[9px] uppercase tracking-[0.3em] text-ash">
             Scroll
           </span>
           <span class="relative block h-14 w-px overflow-hidden bg-bone/15">

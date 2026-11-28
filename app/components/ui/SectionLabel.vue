@@ -13,11 +13,11 @@ withDefaults(
 <template>
   <div
     class="flex items-center gap-4"
-    :class="[tone === 'dark' ? 'text-ink/55' : 'text-ash', align === 'right' ? 'flex-row-reverse' : '']"
+    :class="[tone === 'dark' ? 'text-ink/70' : 'text-ash', align === 'right' ? 'flex-row-reverse' : '']"
   >
     <span
       class="font-oxanium text-[10px] tracking-[0.3em]"
-      :class="tone === 'dark' ? 'text-ink/45' : 'text-champagne/80'"
+      :class="tone === 'dark' ? 'text-ink/60' : 'text-champagne/80'"
     >
       {{ index }}
     </span>

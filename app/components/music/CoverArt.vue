@@ -17,7 +17,7 @@
         height="40"
         class="h-8 w-8 rounded-full md:h-10 md:w-10"
       >
-      <span class="font-oxanium text-[8px] tracking-[0.24em] text-violet/80">
+      <span class="font-oxanium text-[8px] tracking-[0.24em] text-bone/80">
         RAW RECORD
       </span>
     </div>
@@ -30,7 +30,7 @@
         Back<br>to Me
       </span>
       <div
-        class="mt-6 flex items-center justify-between font-oxanium text-[8px] uppercase tracking-[0.24em] text-bone/55"
+        class="mt-6 flex items-center justify-between font-oxanium text-[8px] uppercase tracking-[0.24em] text-bone/75"
       >
         <span>Apostrophe</span>
         <span>Unreleased</span>

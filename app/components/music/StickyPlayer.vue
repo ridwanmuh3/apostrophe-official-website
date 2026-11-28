@@ -11,7 +11,16 @@ withDefaults(
 const emit = defineEmits<{ toggle: []; seek: [time: number] }>();
 const { gsap } = useGsap();
 
+function prefersReduced() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 function enter(el: Element, done: () => void) {
+  if (prefersReduced()) {
+    done();
+    return;
+  }
+
   gsap.fromTo(
     el,
     { y: 40, opacity: 0 },
@@ -20,6 +29,11 @@ function enter(el: Element, done: () => void) {
 }
 
 function leave(el: Element, done: () => void) {
+  if (prefersReduced()) {
+    done();
+    return;
+  }
+
   gsap.to(el, {
     y: 30,
     opacity: 0,

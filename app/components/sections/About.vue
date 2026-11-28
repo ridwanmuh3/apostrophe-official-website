@@ -53,7 +53,7 @@ onMounted(async () => {
 
     if (watermark.value) {
       gsap.to(watermark.value, {
-        yPercent: -10,
+        y: -48,
         ease: "none",
         scrollTrigger: {
           trigger: root.value,
@@ -85,9 +85,13 @@ onBeforeUnmount(() => {
     <span
       ref="watermark"
       aria-hidden="true"
-      class="pointer-events-none absolute -bottom-[12%] right-[3%] select-none font-display text-[34vw] leading-none text-ink/[0.06] md:-bottom-[16%] md:right-[5%] md:text-[26vw]"
+      class="pointer-events-none absolute bottom-0 right-0 select-none font-display leading-none text-ink/[0.06]"
     >
-      '
+      <span
+        class="block translate-x-[8%] translate-y-[73%] text-[120vw] leading-none md:text-[92vw]"
+      >
+        '
+      </span>
     </span>
 
     <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
@@ -120,7 +124,7 @@ onBeforeUnmount(() => {
 
             <div class="mt-10 flex items-center gap-4">
               <span class="h-px flex-1 bg-ink/15" />
-              <span class="font-oxanium text-[9px] uppercase tracking-[0.28em] text-ink/45">
+              <span class="font-oxanium text-[9px] uppercase tracking-[0.28em] text-ink/60">
                 EST. 2023
               </span>
             </div>

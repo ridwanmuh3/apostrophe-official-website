@@ -148,15 +148,18 @@ function trapMenu(event: KeyboardEvent) {
 <template>
   <header
     ref="root"
-    class="fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,color] duration-500"
-    :class="[
-      inverted ? 'text-ink' : 'text-bone',
-      inverted ? 'border-ink/10' : 'border-bone/10',
-      scrolled ? (inverted ? 'bg-bone/85' : 'bg-ink/85') : 'bg-transparent',
-    ]"
+    class="fixed inset-x-0 top-0 z-50 px-3 pt-3 transition-colors duration-500 md:px-6 md:pt-4"
+    :class="inverted ? 'text-ink' : 'text-bone'"
   >
     <div
-      class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10"
+      class="mx-auto flex max-w-7xl items-center justify-between rounded-editorial border px-5 py-3 transition-[background-color,border-color] duration-500 md:px-7"
+      :class="[
+        scrolled
+          ? inverted
+            ? 'border-ink/10 bg-bone/95'
+            : 'border-bone/12 bg-ink/95'
+          : 'border-transparent bg-transparent',
+      ]"
     >
       <NuxtLink
         to="#home-section"
@@ -184,7 +187,7 @@ function trapMenu(event: KeyboardEvent) {
         >
           <span
             class="font-oxanium text-[9px] tracking-[0.2em]"
-            :class="inverted ? 'text-ink/45' : 'text-champagne/75'"
+            :class="inverted ? 'text-ink/65' : 'text-champagne/75'"
           >
             0{{ idx + 1 }}
           </span>

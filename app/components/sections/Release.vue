@@ -24,12 +24,14 @@ const controls = ref<HTMLElement | null>(null);
 
 const volumeOpen = ref(false);
 const sectionVisible = ref(true);
+const footerVisible = ref(false);
 const reduced = ref(false);
 const intensity = ref(0);
 
 const streaming = Object.entries(release.streaming).filter(([, url]) => url);
 
 let visibilityObserver: IntersectionObserver | null = null;
+let footerObserver: IntersectionObserver | null = null;
 let motionQuery: MediaQueryList | null = null;
 let motionContext: ReturnType<typeof gsap.context> | null = null;
 let split: SplitTextType | null = null;
@@ -54,6 +56,18 @@ onMounted(async () => {
     { threshold: 0.08 },
   );
   visibilityObserver.observe(section.value);
+
+  // Keep the floating player clear of the footer copyright row.
+  const footer = document.querySelector("footer");
+  if (footer) {
+    footerObserver = new IntersectionObserver(
+      ([entry]) => {
+        footerVisible.value = !!entry?.isIntersecting;
+      },
+      { threshold: 0.05 },
+    );
+    footerObserver.observe(footer);
+  }
 
   await document.fonts?.ready.catch(() => {});
 
@@ -225,6 +239,7 @@ function openVolumeOnHover(event: PointerEvent) {
 
 onBeforeUnmount(() => {
   visibilityObserver?.disconnect();
+  footerObserver?.disconnect();
   motionQuery?.removeEventListener("change", syncMotion);
   ambientContext?.revert();
   motionContext?.revert();
@@ -294,7 +309,7 @@ onBeforeUnmount(() => {
 
         <!-- Copy + player -->
         <div class="md:col-span-6 lg:pt-6">
-          <p class="font-oxanium text-[10px] uppercase tracking-[0.3em] text-violet/90">
+          <p class="font-oxanium text-[10px] uppercase tracking-[0.3em] text-violet">
             {{ release.status }}
           </p>
 
@@ -427,7 +442,7 @@ onBeforeUnmount(() => {
   </section>
 
   <MusicStickyPlayer
-    :visible="isPlaying && !sectionVisible"
+    :visible="isPlaying && !sectionVisible && !footerVisible"
     :playing="isPlaying"
     :current-time="currentTime"
     :duration="duration"

@@ -34,6 +34,9 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-11-26",
   css: ["~/assets/css/tailwind.css"],
   devtools: { enabled: true },
+  features: {
+    inlineStyles: true,
+  },
   site: {
     name: "Apostrophe",
     url: "https://weareapostrophe.netlify.app",

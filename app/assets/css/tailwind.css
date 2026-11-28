@@ -45,6 +45,7 @@
     background-color: var(--color-ink);
     color-scheme: dark;
     scrollbar-color: #3a3732 var(--color-ink);
+    scroll-padding-top: 6rem;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -73,7 +74,7 @@
   }
 
   :focus-visible {
-    outline: 1px solid var(--color-champagne);
+    outline: 2px solid currentColor;
     outline-offset: 3px;
   }
 
