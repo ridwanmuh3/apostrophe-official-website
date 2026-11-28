@@ -1,185 +1,222 @@
 <script setup lang="ts">
-  import imagesGallery from "~/assets/data/imagesGallery";
+import imagesGallery from "~/assets/data/imagesGallery";
 
-  const { gsap } = useGsap();
-  const sectionRef = ref<HTMLElement | null>(null);
-  const headerRef = ref<HTMLElement | null>(null);
-  const gridRef = ref<HTMLElement | null>(null);
-  const controlsRef = ref<HTMLElement | null>(null);
+const { gsap } = useGsap();
 
-  const viewerOpen = ref(false);
-  const viewerStartIndex = ref(0);
+const stageRef = ref<HTMLElement | null>(null);
+const rowARef = ref<HTMLElement | null>(null);
+const rowBRef = ref<HTMLElement | null>(null);
+const headerRef = ref<HTMLElement | null>(null);
 
-  const openViewer = (pageImageIdx: number) => {
-    viewerStartIndex.value =
-      currentGalleryIndex.value * maxImagePerPage + pageImageIdx;
-    viewerOpen.value = true;
-  };
+const pinned = ref(false);
+const viewerOpen = ref(false);
+const viewerStartIndex = ref(0);
+const sourceEl = shallowRef<HTMLElement | null>(null);
 
-  const currentGalleryIndex = ref(0);
-  const maxImagePerPage = 8;
-  const totalPages = Math.ceil(imagesGallery.length / maxImagePerPage);
-  const pageDelay = 8000;
-  const transitioning = ref(false);
+const rowOne = imagesGallery.slice(0, 12);
+const rowTwo = imagesGallery.slice(12, 24);
 
-  const currentImages = computed(() =>
-    imagesGallery.slice(
-      currentGalleryIndex.value * maxImagePerPage,
-      currentGalleryIndex.value * maxImagePerPage + maxImagePerPage,
-    ),
-  );
+// Varied editorial widths, expressed in viewport units and clamped.
+const widthsA = [22, 15, 20, 17, 24, 16, 21, 18, 15, 22, 17, 20];
+const widthsB = [17, 21, 16, 23, 15, 20, 18, 22, 16, 19, 24, 17];
 
-  const changePage = async (newIndex: number) => {
-    if (transitioning.value || newIndex === currentGalleryIndex.value) return;
-    transitioning.value = true;
+let mm: ReturnType<typeof gsap.matchMedia> | null = null;
+let headerMm: ReturnType<typeof gsap.matchMedia> | null = null;
 
-    const direction = newIndex > currentGalleryIndex.value ? 1 : -1;
+function openViewer(index: number, event: MouseEvent) {
+  sourceEl.value = event.currentTarget as HTMLElement;
+  viewerStartIndex.value = index;
+  viewerOpen.value = true;
+}
 
-    await gsap.to(gridRef.value, {
-      x: direction * -60,
-      opacity: 0,
-      duration: 0.35,
-      ease: "power2.in",
+onMounted(async () => {
+  await nextTick();
+
+  mm = gsap.matchMedia();
+
+  mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
+    const stage = stageRef.value;
+    const rowA = rowARef.value;
+    const rowB = rowBRef.value;
+    if (!stage || !rowA || !rowB) return;
+
+    pinned.value = true;
+
+    const distanceA = () => Math.max(0, rowA.scrollWidth - stage.clientWidth);
+    const distanceB = () => Math.max(0, rowB.scrollWidth - stage.clientWidth);
+
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: stage,
+        start: "top top",
+        end: () => `+=${Math.max(distanceA(), distanceB())}`,
+        pin: true,
+        scrub: 1,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+      },
     });
 
-    currentGalleryIndex.value = newIndex;
-    await nextTick();
-
-    gsap.fromTo(
-      gridRef.value,
-      { x: direction * 60, opacity: 0 },
-      {
-        x: 0,
-        opacity: 1,
-        duration: 0.5,
-        ease: "power2.out",
-        onComplete: () => {
-          transitioning.value = false;
-        },
-      },
+    timeline.to(rowA, { x: () => -distanceA(), ease: "none" }, 0);
+    timeline.fromTo(
+      rowB,
+      { x: () => -distanceB() },
+      { x: 0, ease: "none" },
+      0,
     );
-  };
 
-  const { start } = useInterval(() => {
-    const next =
-      currentGalleryIndex.value >= totalPages - 1
-        ? 0
-        : currentGalleryIndex.value + 1;
-    changePage(next);
-  }, pageDelay);
-
-  const handleNav = (index: number) => {
-    changePage(index);
-    start();
-  };
-
-  onMounted(() => {
-    if (headerRef.value) {
-      gsap.fromTo(
-        headerRef.value.children,
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.12,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: headerRef.value,
-            start: "top 80%",
-          },
-        },
-      );
-    }
-
-    if (controlsRef.value) {
-      gsap.fromTo(
-        controlsRef.value,
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: controlsRef.value,
-            start: "top 85%",
-          },
-        },
-      );
-    }
+    return () => {
+      timeline.scrollTrigger?.kill();
+      timeline.kill();
+      pinned.value = false;
+      gsap.set([rowA, rowB], { clearProps: "transform" });
+    };
   });
+
+  if (headerRef.value) {
+    headerMm = gsap.matchMedia();
+    headerMm.add("(prefers-reduced-motion: no-preference)", () => {
+      if (!headerRef.value) return;
+      gsap.from(headerRef.value.children, {
+        y: 26,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.09,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: headerRef.value,
+          start: "top 84%",
+          once: true,
+        },
+      });
+    });
+  }
+});
+
+onBeforeUnmount(() => {
+  mm?.revert();
+  headerMm?.revert();
+});
 </script>
 
 <template>
-  <section id="gallery-section" ref="sectionRef" class="relative w-full overflow-hidden scroll-mt-16">
-    <!-- Mesh gradient accents (contained inside section) -->
-    <div
-      class="absolute top-1/3 left-10 w-[350px] h-[350px] bg-cyan-500/6 rounded-full blur-[140px] pointer-events-none" />
-    <div
-      class="absolute top-20 right-20 w-[300px] h-[300px] bg-violet-500/6 rounded-full blur-[120px] pointer-events-none" />
+  <section id="gallery-section" class="relative w-full scroll-mt-24">
+    <div class="mx-auto max-w-7xl px-6 pt-32 md:px-10 md:pt-44">
+      <div ref="headerRef">
+        <UiSectionLabel index="05" label="Galeri" />
 
-    <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-32 md:py-44">
-      <!-- Section header -->
-      <div ref="headerRef" class="flex flex-col items-center text-center mb-12 md:mb-16">
-        <span class="text-xs font-medium tracking-[0.25em] uppercase text-zinc-500 mb-6">
-          Galeri
-        </span>
-        <h2
-          class="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold leading-tight tracking-tight text-white max-w-4xl">
-          Potret dari Penampilan Apostrophe
-        </h2>
-        <p class="mt-6 text-base md:text-lg text-zinc-400 max-w-xl">
+        <div class="mt-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <h2
+            class="max-w-3xl font-display text-[clamp(2.6rem,5.4vw,4.8rem)] leading-[0.95] tracking-[-0.025em]"
+          >
+            Potret dari Penampilan Apostrophe
+          </h2>
+          <div class="flex items-center gap-4">
+            <span class="h-px w-10 bg-bone/20" />
+            <p class="font-oxanium text-[9px] uppercase tracking-[0.28em] text-ash">
+              24 frames
+            </p>
+          </div>
+        </div>
+
+        <p class="mt-6 max-w-md text-[15px] leading-relaxed text-ash">
           Dokumentasi dari penampilan band Apostrophe di berbagai acara.
         </p>
       </div>
+    </div>
 
-      <!-- Gallery grid + nav -->
-      <div ref="controlsRef">
-        <div ref="gridRef" class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          <div
-            v-for="(image, idx) in currentImages"
-            :key="`${currentGalleryIndex}-${idx}`"
-            class="aspect-square overflow-hidden rounded-lg cursor-pointer"
-            @click="openViewer(idx)"
+    <div
+      ref="stageRef"
+      class="relative mt-14 flex flex-col justify-center gap-3 overflow-hidden py-8 md:mt-20 md:gap-4 lg:min-h-[100svh] lg:py-0"
+    >
+      <!-- Row one -->
+      <div
+        :class="
+          pinned
+            ? 'overflow-hidden'
+            : 'no-scrollbar snap-x snap-mandatory overflow-x-auto'
+        "
+      >
+        <div
+          ref="rowARef"
+          class="flex w-max items-stretch gap-3 will-change-transform lg:gap-4"
+        >
+          <button
+            v-for="(image, idx) in rowOne"
+            :key="image"
+            type="button"
+            class="group relative h-[clamp(150px,32vh,360px)] shrink-0 snap-start overflow-hidden rounded-editorial bg-ink-soft"
+            :style="{ width: `clamp(150px, ${widthsA[idx]}vw, 560px)` }"
+            data-cursor="View"
+            :aria-label="`Buka dokumentasi ${idx + 1}`"
+            @click="openViewer(idx, $event)"
           >
             <img
               :src="image"
-              :loading="idx < 4 ? 'eager' : 'lazy'"
-              alt="Gallery image"
-              class="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
+              alt=""
+              width="1200"
+              height="800"
+              loading="lazy"
+              decoding="async"
+              class="grade-warm h-full w-full object-cover object-center transition-transform duration-700 ease-editorial group-hover:scale-[1.04]"
             >
-          </div>
-        </div>
-
-        <div class="flex items-center justify-center gap-4 mt-8">
-          <button
-            class="p-3 border border-zinc-700 rounded-lg transition-colors duration-300 cursor-pointer hover:border-zinc-400 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-zinc-700 flex items-center"
-            :disabled="currentGalleryIndex === 0" @click="handleNav(currentGalleryIndex - 1)">
-            <Icon name="mdi:arrow-left" class="text-lg" />
-          </button>
-
-          <div class="flex items-center gap-2">
-            <button v-for="i in totalPages" :key="i"
-              class="w-2 h-2 rounded-full transition-all duration-300 cursor-pointer" :class="currentGalleryIndex === i - 1
-                ? 'bg-white w-6'
-                : 'bg-zinc-600 hover:bg-zinc-400'
-                " @click="handleNav(i - 1)" />
-          </div>
-
-          <button
-            class="p-3 border border-zinc-700 rounded-lg transition-colors duration-300 cursor-pointer hover:border-zinc-400 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-zinc-700 flex items-center"
-            :disabled="currentGalleryIndex === totalPages - 1" @click="handleNav(currentGalleryIndex + 1)">
-            <Icon name="mdi:arrow-right" class="text-lg" />
           </button>
         </div>
       </div>
+
+      <!-- Row two (counter-scroll) -->
+      <div
+        :class="
+          pinned
+            ? 'overflow-hidden'
+            : 'no-scrollbar snap-x snap-mandatory overflow-x-auto'
+        "
+      >
+        <div
+          ref="rowBRef"
+          class="flex w-max items-stretch gap-3 will-change-transform lg:gap-4"
+        >
+          <button
+            v-for="(image, idx) in rowTwo"
+            :key="image"
+            type="button"
+            class="group relative h-[clamp(130px,26vh,300px)] shrink-0 snap-start overflow-hidden rounded-editorial bg-ink-soft"
+            :style="{ width: `clamp(140px, ${widthsB[idx]}vw, 520px)` }"
+            data-cursor="View"
+            :aria-label="`Buka dokumentasi ${idx + 13}`"
+            @click="openViewer(idx + 12, $event)"
+          >
+            <img
+              :src="image"
+              alt=""
+              width="1200"
+              height="800"
+              loading="lazy"
+              decoding="async"
+              class="grade-warm h-full w-full object-cover object-center transition-transform duration-700 ease-editorial group-hover:scale-[1.04]"
+            >
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="mx-auto flex max-w-7xl items-center justify-between px-6 py-10 md:px-10"
+    >
+      <p class="font-oxanium text-[9px] uppercase tracking-[0.28em] text-ash">
+        Klik untuk melihat
+      </p>
+      <span class="h-px flex-1 bg-bone/10 mx-6" aria-hidden="true" />
+      <p class="font-oxanium text-[9px] uppercase tracking-[0.28em] text-ash">
+        Tasikmalaya
+      </p>
     </div>
 
     <ImageViewer
       v-if="viewerOpen"
       :images="imagesGallery"
       :start-index="viewerStartIndex"
+      :source-el="sourceEl"
       @close="viewerOpen = false"
     />
   </section>

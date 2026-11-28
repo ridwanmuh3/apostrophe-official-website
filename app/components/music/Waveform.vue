@@ -27,7 +27,8 @@ function draw() {
       : 0;
     sum += level;
     const barHeight = Math.max(3, (0.08 + level * 0.83) * height);
-    ctx.fillStyle = i / count < 0.65 ? "#c4b5fd" : "#8b77af";
+    ctx.fillStyle =
+      i / count < 0.65 ? "rgba(198, 176, 140, 0.92)" : "rgba(139, 92, 246, 0.5)";
     ctx.fillRect(i * gap, (height - barHeight) / 2, Math.max(1, gap * 0.48), barHeight);
   }
   if (props.playing) intensity.value = sum / count;

@@ -2,120 +2,167 @@
 import members from "~/assets/data/members";
 
 const { gsap } = useGsap();
+
 const sectionRef = ref<HTMLElement | null>(null);
 const headerRef = ref<HTMLElement | null>(null);
 
+let mm: ReturnType<typeof gsap.matchMedia> | null = null;
+
 onMounted(() => {
-  if (headerRef.value) {
-    gsap.fromTo(
-      headerRef.value.children,
-      { y: 40, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.9,
-        stagger: 0.12,
+  mm = gsap.matchMedia();
+
+  mm.add("(prefers-reduced-motion: no-preference)", () => {
+    if (headerRef.value) {
+      gsap.from(headerRef.value.children, {
+        y: 26,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.09,
         ease: "power3.out",
         scrollTrigger: {
           trigger: headerRef.value,
-          start: "top 80%",
+          start: "top 84%",
+          once: true,
         },
-      },
-    );
-  }
+      });
+    }
 
-  sectionRef.value?.querySelectorAll(".member-block").forEach((block) => {
-    gsap.fromTo(
-      block,
-      { y: 60, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: block,
-          start: "top 85%",
-        },
-      },
-    );
+    sectionRef.value?.querySelectorAll<HTMLElement>(".member-row").forEach((row) => {
+      const media = row.querySelector(".member-media");
+      const shot = row.querySelector(".member-shot");
+      const info = row.querySelector(".member-info");
+
+      if (media) {
+        gsap.from(media, {
+          clipPath: "inset(0 0 100% 0)",
+          duration: 1.1,
+          ease: "expo.out",
+          scrollTrigger: { trigger: row, start: "top 82%", once: true },
+        });
+      }
+
+      if (shot) {
+        gsap.from(shot, {
+          scale: 1.08,
+          duration: 1.4,
+          ease: "expo.out",
+          scrollTrigger: { trigger: row, start: "top 82%", once: true },
+        });
+      }
+
+      if (info) {
+        gsap.from(info, {
+          y: 28,
+          opacity: 0,
+          duration: 0.85,
+          ease: "power3.out",
+          scrollTrigger: { trigger: row, start: "top 80%", once: true },
+        });
+      }
+    });
   });
 });
+
+onBeforeUnmount(() => mm?.revert());
 </script>
 
 <template>
   <section
     id="members-section"
     ref="sectionRef"
-    class="relative w-full bg-zinc-900/30 overflow-hidden scroll-mt-16"
+    class="relative w-full overflow-hidden py-32 md:py-44"
   >
-    <!-- Mesh gradient accents (contained inside section) -->
-    <div
-      class="absolute top-20 right-20 w-[450px] h-[450px] bg-rose-500/6 rounded-full blur-[150px] pointer-events-none"
-    />
-    <div
-      class="absolute bottom-40 left-10 w-[350px] h-[350px] bg-indigo-500/6 rounded-full blur-[140px] pointer-events-none"
-    />
+    <div class="mx-auto max-w-7xl px-6 md:px-10">
+      <div ref="headerRef">
+        <UiSectionLabel index="04" label="Personil" />
 
-    <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-32 md:py-44">
-      <!-- Section header -->
-      <div
-        ref="headerRef"
-        class="flex flex-col items-center text-center mb-20 md:mb-28"
-      >
-        <span
-          class="text-xs font-medium tracking-[0.25em] uppercase text-zinc-500 mb-6"
-        >
-          Personil
-        </span>
-        <h2
-          class="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold leading-tight tracking-tight text-white max-w-4xl"
-        >
-          Berkenalan Lebih Dekat dengan Personil Band Apostrophe
-        </h2>
+        <div class="mt-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <h2
+            class="max-w-3xl font-display text-[clamp(2.6rem,5.4vw,4.8rem)] leading-[0.95] tracking-[-0.025em]"
+          >
+            Berkenalan Lebih Dekat dengan Personil Band Apostrophe
+          </h2>
+          <p class="font-oxanium text-[9px] uppercase tracking-[0.28em] text-ash">
+            Lima orang · Satu suara
+          </p>
+        </div>
       </div>
 
-      <!-- Members list -->
-      <div class="flex flex-col gap-24 md:gap-36">
-        <div
+      <div class="mt-20 flex flex-col gap-24 md:mt-28 md:gap-32">
+        <article
           v-for="(member, idx) in members"
           :key="member.fullname"
-          class="member-block grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center"
+          class="member-row group grid grid-cols-12 items-center gap-y-8 md:gap-x-10"
         >
           <div
-            class="aspect-4/5 overflow-hidden rounded-lg"
-            :class="{ 'md:order-2': idx % 2 !== 0 }"
+            class="member-media col-span-12 md:col-span-5"
+            :class="idx % 2 !== 0 ? 'md:order-2 md:col-start-8' : ''"
           >
-            <img
-              :src="member.image"
-              :alt="member.fullname"
-              loading="eager"
-              class="w-full h-full object-cover object-center grayscale hover:grayscale-0 transition-all duration-700 hover:scale-[1.03]"
-            />
+            <div class="relative aspect-4/5 overflow-hidden rounded-editorial bg-bone/5">
+              <img
+                :src="member.image"
+                :alt="`${member.fullname} — ${member.role}`"
+                width="864"
+                height="864"
+                loading="lazy"
+                decoding="async"
+                class="member-shot h-full w-full object-cover object-center"
+              >
+            </div>
           </div>
 
           <div
-            class="flex flex-col gap-2 md:gap-3"
-            :class="idx % 2 !== 0 ? 'md:text-right md:items-end' : ''"
+            class="member-info col-span-12 md:col-span-6"
+            :class="
+              idx % 2 !== 0
+                ? 'md:order-1 md:col-start-1 md:text-right'
+                : 'md:col-start-7'
+            "
           >
-            <span
-              class="text-xs font-medium tracking-[0.25em] uppercase text-zinc-500"
+            <div
+              class="flex items-baseline gap-4"
+              :class="idx % 2 !== 0 ? 'md:flex-row-reverse' : ''"
             >
-              {{ member.role }}
-            </span>
+              <span class="font-oxanium text-[11px] tracking-[0.24em] text-champagne">
+                {{ String(idx + 1).padStart(2, "0") }}
+              </span>
+              <span class="h-px flex-1 bg-bone/12" />
+              <span class="font-oxanium text-[9px] uppercase tracking-[0.26em] text-ash">
+                {{ member.role }}
+              </span>
+            </div>
+
             <h3
-              class="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-white leading-tight"
+              class="mt-5 font-display text-[clamp(2rem,4.2vw,3.6rem)] leading-[0.98] tracking-[-0.02em]"
             >
               {{ member.fullname }}
             </h3>
+
             <p
-              class="text-base md:text-lg leading-relaxed text-zinc-400 max-w-lg mt-1"
+              class="mt-5 max-w-md text-[15px] leading-[1.8] text-ash"
+              :class="idx % 2 !== 0 ? 'md:ml-auto' : ''"
             >
               {{ member.description }}
             </p>
           </div>
-        </div>
+        </article>
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+.member-shot {
+  filter: grayscale(1) sepia(0.16) saturate(0.9) contrast(1.04) brightness(0.92);
+  transition:
+    filter 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .member-row:hover .member-shot {
+    filter: none;
+    transform: scale(1.03);
+  }
+}
+</style>

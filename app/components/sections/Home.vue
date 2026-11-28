@@ -1,162 +1,174 @@
 <script setup lang="ts">
+import { eases } from "~/assets/data/motion";
+
 const { gsap } = useGsap();
+
 const sectionRef = ref<HTMLElement | null>(null);
-const subtitleRef = ref<HTMLElement | null>(null);
-const ctaRef = ref<HTMLElement | null>(null);
-const socialRef = ref<HTMLElement | null>(null);
-const scrollRef = ref<HTMLElement | null>(null);
+const imageRef = ref<HTMLImageElement | null>(null);
+const titleRef = ref<HTMLElement | null>(null);
+const scrollCueRef = ref<HTMLElement | null>(null);
+
+const whatsapp =
+  "https://wa.me/6287802784601?text=Halo%20apostrophe%2C%20aku%20pengen%20tanya%20tanya%20nih";
+
+const meta = ["EST. 2023", "TASIKMALAYA", "POP · ROCK · ALT"];
+let mm: ReturnType<typeof gsap.matchMedia> | null = null;
 
 onMounted(() => {
-  const tl = gsap.timeline({ delay: 0.2 });
+  mm = gsap.matchMedia();
 
-  tl.from(".hero-bg", {
-    scale: 1.15,
-    opacity: 0,
-    duration: 1.8,
-    ease: "power2.out",
-  });
+  mm.add("(prefers-reduced-motion: no-preference)", () => {
+    if (!sectionRef.value || !imageRef.value) return;
 
-  tl.from(
-    ".hero-mesh",
-    { opacity: 0, duration: 1.5, ease: "power1.out" },
-    "-=1.2",
-  );
+    const intro = gsap.timeline({ defaults: { ease: eases.expo } });
 
-  tl.from(
-    ".hero-text-line",
-    { y: "100%", duration: 1.2, stagger: 0.15, ease: "power4.out" },
-    "-=1",
-  );
+    intro.from(
+      ".hero-reveal",
+      { y: 22, opacity: 0, duration: 0.8, stagger: 0.08 },
+      0.15,
+    );
 
-  tl.fromTo(
-    subtitleRef.value,
-    { y: 20, opacity: 0 },
-    { y: 0, opacity: 1, duration: 0.7, ease: "power2.out" },
-    "-=0.5",
-  );
+    gsap.to(imageRef.value, {
+      yPercent: 7,
+      ease: "none",
+      scrollTrigger: {
+        trigger: sectionRef.value,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
 
-  tl.fromTo(
-    ctaRef.value,
-    { y: 20, opacity: 0 },
-    { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
-    "-=0.3",
-  );
+    if (titleRef.value) {
+      gsap.to(titleRef.value, {
+        yPercent: -9,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.value,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }
 
-  tl.fromTo(
-    socialRef.value,
-    { y: 15, opacity: 0 },
-    { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
-    "-=0.3",
-  );
-
-  tl.fromTo(
-    scrollRef.value,
-    { opacity: 0 },
-    { opacity: 1, duration: 0.5 },
-    "-=0.2",
-  );
-
-  gsap.to(".scroll-indicator-icon", {
-    y: 8,
-    repeat: -1,
-    yoyo: true,
-    duration: 1.2,
-    ease: "power1.inOut",
-    delay: 3,
+    if (scrollCueRef.value) {
+      gsap.fromTo(
+        scrollCueRef.value.querySelector(".scroll-line"),
+        { scaleY: 0, transformOrigin: "top center" },
+        {
+          scaleY: 1,
+          duration: 1.5,
+          repeat: -1,
+          repeatDelay: 0.25,
+          ease: "power2.inOut",
+          delay: 2,
+        },
+      );
+    }
   });
 });
+
+onBeforeUnmount(() => mm?.revert());
 </script>
 
 <template>
   <section
     id="home-section"
     ref="sectionRef"
-    class="relative w-full min-h-screen overflow-hidden"
+    class="relative isolate flex min-h-[100svh] w-full flex-col justify-end overflow-hidden pt-28"
   >
-    <!-- Background image -->
-    <div
-      class="hero-bg absolute inset-0 bg-cover bg-center bg-no-repeat"
-      :style="{ backgroundImage: 'url(/images/hero.webp)' }"
-    />
+    <!-- Full-bleed live shot -->
+    <div class="absolute inset-0 -z-10 overflow-hidden">
+      <img
+        ref="imageRef"
+        src="/images/hero-1600.webp"
+        srcset="
+          /images/hero-800.webp 800w,
+          /images/hero-1200.webp 1200w,
+          /images/hero-1600.webp 1600w,
+          /images/hero-2400.webp 2400w
+        "
+        sizes="100vw"
+        width="2400"
+        height="1600"
+        alt="Apostrophe tampil di atas panggung"
+        fetchpriority="high"
+        decoding="async"
+        class="grade-warm h-full w-full object-cover object-[50%_36%] will-change-transform"
+      >
+      <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/15" />
+      <div class="absolute inset-0 bg-gradient-to-r from-ink/60 via-transparent to-ink/30" />
+    </div>
 
-    <!-- Gradient overlays -->
+    <!-- Right-edge meta -->
     <div
-      class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/70 to-zinc-950/20"
-    />
-    <div
-      class="absolute inset-0 bg-gradient-to-r from-zinc-950/60 to-transparent"
-    />
-
-    <!-- Mesh gradient accents (inside overflow-hidden, safe) -->
-    <div
-      class="hero-mesh absolute bottom-0 left-0 w-[500px] h-[400px] bg-purple-600/15 rounded-full blur-[150px] pointer-events-none"
-    />
-    <div
-      class="hero-mesh absolute top-0 right-0 w-[400px] h-[300px] bg-blue-500/10 rounded-full blur-[130px] pointer-events-none"
-    />
-
-    <!-- Content -->
-    <div
-      class="relative z-10 max-w-7xl mx-auto px-6 md:px-10 min-h-screen flex flex-col justify-end pb-28 md:pb-36 pt-32"
+      class="hero-reveal absolute right-8 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-8 lg:flex"
+      aria-hidden="true"
     >
-      <div class="flex flex-col gap-4 md:gap-5">
-        <!-- Main heading -->
-        <div>
-          <div class="overflow-hidden">
-            <h1
-              class="hero-text-line text-[3.2rem] sm:text-[4.5rem] md:text-[6rem] lg:text-[7.5rem] font-bold leading-[0.9] tracking-tight text-white"
-            >
-              We are
-            </h1>
-          </div>
-          <div class="overflow-hidden">
-            <h1
-              class="hero-text-line text-[3.2rem] sm:text-[4.5rem] md:text-[6rem] lg:text-[7.5rem] font-bold leading-[0.9] tracking-tight text-white"
-            >
-              Apostrophe
-            </h1>
-          </div>
-        </div>
+      <span class="h-16 w-px bg-bone/20" />
+      <div class="writing-vertical flex items-center gap-6 font-oxanium text-[9px] uppercase tracking-[0.32em] text-bone/70">
+        <span v-for="item in meta" :key="item">{{ item }}</span>
+      </div>
+      <span class="h-16 w-px bg-bone/20" />
+    </div>
 
-        <!-- Subtitle -->
-        <p
-          ref="subtitleRef"
-          class="text-base md:text-lg text-zinc-400 max-w-md leading-relaxed opacity-0"
-        >
-          Band Musik Pop, Rock &amp; Alternative Rock dari Tasikmalaya.
+    <div
+      class="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-end px-6 pb-10 md:px-10 md:pb-14"
+    >
+      <div ref="titleRef">
+        <p class="hero-reveal font-oxanium text-[9px] uppercase tracking-[0.34em] text-champagne/80">
+          Official site
         </p>
 
-        <!-- CTA Button -->
-        <div ref="ctaRef" class="mt-2 opacity-0">
-          <NuxtLink
-            class="inline-flex items-center gap-3 bg-white text-zinc-950 px-7 py-3 text-sm font-medium tracking-wide hover:bg-zinc-200 active:scale-[0.98] transition-[background-color,transform] duration-300 cursor-pointer rounded-md"
-            to="https://wa.me/6287802784601?text=Halo%20apostrophe%2C%20aku%20pengen%20tanya%20tanya%20nih"
-            target="_blank"
-            rel="external noreferrer"
-          >
-            <Icon class="text-lg" name="ic:baseline-whatsapp" />
-            <span>Hubungi Kami</span>
-          </NuxtLink>
+        <h1 class="mt-6 font-display leading-[0.82] tracking-[-0.025em]">
+          <span class="block overflow-hidden">
+            <span class="hero-line-inner block pb-[0.06em] text-[clamp(1.9rem,4.2vw,3.2rem)] italic text-bone/80">
+              We are
+            </span>
+          </span>
+          <span class="block overflow-hidden">
+            <span class="hero-line-inner block pb-[0.08em] text-[clamp(4.1rem,13vw,11.5rem)] text-bone">
+              Apostrophe
+            </span>
+          </span>
+        </h1>
+      </div>
+
+      <div class="mt-9 flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+        <div class="max-w-sm">
+          <p class="hero-reveal text-[15px] leading-relaxed text-bone/70">
+            Band musik Pop, Rock &amp; Alternative Rock dari Tasikmalaya.
+          </p>
+          <div class="hero-reveal mt-7">
+            <UiAppButton
+              :href="whatsapp"
+              target="_blank"
+              rel="external noreferrer"
+              cursor="Chat"
+            >
+              <Icon name="ic:baseline-whatsapp" class="text-base" />
+              Hubungi Kami
+            </UiAppButton>
+          </div>
         </div>
 
-        <!-- Social Links -->
-        <div ref="socialRef" class="opacity-0">
-          <SocialMediaLinks />
+        <div ref="scrollCueRef" class="hero-reveal hidden items-center gap-4 sm:flex">
+          <span class="font-oxanium text-[9px] uppercase tracking-[0.3em] text-ash">
+            Scroll
+          </span>
+          <span class="relative block h-14 w-px overflow-hidden bg-bone/15">
+            <span class="scroll-line absolute inset-0 block bg-champagne" />
+          </span>
         </div>
       </div>
     </div>
 
-    <!-- Scroll indicator (centered to viewport) -->
-    <div
-      ref="scrollRef"
-      class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-0"
-    >
-      <span class="text-[10px] text-zinc-500 tracking-[0.2em] uppercase"
-        >Scroll</span
-      >
-      <Icon
-        class="scroll-indicator-icon text-base text-zinc-500"
-        name="mdi:chevron-down"
+    <!-- Genre marquee -->
+    <div class="hero-reveal relative z-10 border-y border-bone/10 py-3">
+      <UiMarquee
+        :items="['POP', 'ROCK', 'ALTERNATIVE', 'TASIKMALAYA', 'EST. 2023']"
+        :speed="34"
       />
     </div>
   </section>
